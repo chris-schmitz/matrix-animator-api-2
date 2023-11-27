@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -36,4 +37,21 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+// * Found this here:
+// ? https://stackoverflow.com/a/71092054/1934903
+// * but not sure if this is correct or necessary. The gradle jar
+// * tasks exists even without this task def, but is it that the
+// * below task creates the "uber" jar vs the default gradle jar task
+// * making a smaller jar??
+tasks.jar {
+	archivesName = "coolapp"
+	manifest.attributes["Main-Class"] = "com.lightinspiration.matrixanimatorapi.MatrixAnimatorApiApplication"
+	manifest.attributes["Class-Path"] = configurations
+		.runtimeClasspath
+		.get()
+		.joinToString(separator = " ") { file ->
+			"libs/${file.name}"
+		}
 }

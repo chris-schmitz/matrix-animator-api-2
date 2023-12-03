@@ -1,4 +1,4 @@
-package com.lightinspiration.matrixanimatorapi
+package com.lightinspiration.matrixanimatorapi.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Configuration
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Primary
 class JacksonConfiguration {
 
     @Primary
-    fun objectMapper(): ObjectMapper{
+    fun objectMapper(): ObjectMapper {
         return ObjectMapper()
             .findAndRegisterModules()
     }

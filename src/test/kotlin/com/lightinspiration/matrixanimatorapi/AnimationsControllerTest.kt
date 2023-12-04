@@ -27,7 +27,7 @@ class AnimationsControllerTest {
     fun `saveAnimation - can save an animation`() {
         val animation = Animation(
             "Test animation",
-            "someuuid",
+            1,
             8,
             8,
             1,

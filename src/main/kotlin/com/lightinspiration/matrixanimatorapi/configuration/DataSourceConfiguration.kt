@@ -1,8 +1,9 @@
 package com.lightinspiration.matrixanimatorapi.configuration
 
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.jdbc.datasource.DriverManagerDataSource
 import javax.sql.DataSource
 
 @Configuration
@@ -12,14 +13,8 @@ class DataSourceConfiguration {
     // * The datasource defines the information needed to connect to a Database to access the various schemas->tables->records inside
     // * our queries from the template level happen within a given database but need to specify the target data starting at the schema level
     @Bean("postgres-datasource")
+    @ConfigurationProperties("spring.datasource.schmitz-sandbox")
     fun postgresDataSource(): DataSource {
-        val source = DriverManagerDataSource()
-        source.apply {
-            setDriverClassName("org.postgresql.Driver")
-            url = "jdbc:postgresql://localhost:5432/schmitz_sandbox"
-            username = "postgres"
-            password = "password"
-        }
-        return source
+        return DataSourceBuilder.create().build()
     }
 }

@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    schmitz-sandbox:
+      jdbc-url: jdbc:postgresql://localhost:5432/schmitz_sandbox
+      username: postgres
+      password: password
+      driver-class-name: org.postgresql.Driver

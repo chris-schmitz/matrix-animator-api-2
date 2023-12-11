@@ -3,7 +3,6 @@ package com.lightinspiration.matrixanimatorapi.services
 import com.lightinspiration.matrixanimatorapi.domain.Animation
 import com.lightinspiration.matrixanimatorapi.domain.Frame
 import com.lightinspiration.matrixanimatorapi.repositories.AnimationRepository
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
@@ -12,7 +11,7 @@ import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 
 @ExtendWith(MockitoExtension::class)
-class AnimationServiceTest{
+class AnimationServiceTest {
 
     @Mock
     private lateinit var animationRepository: AnimationRepository
@@ -24,7 +23,7 @@ class AnimationServiceTest{
     fun `saveAnimation - can save an animation`() {
         val animation = Animation(
             "a cool annimation",
-            "someuuuid",
+            1,
             8,
             8,
             1,

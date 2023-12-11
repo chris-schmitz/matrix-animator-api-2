@@ -28,7 +28,9 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.postgresql:postgresql")
+    implementation("org.liquibase:liquibase-core:4.25.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.testcontainers:postgresql:1.19.3")
 }
 
 tasks.withType<KotlinCompile> {

@@ -28,16 +28,11 @@ class TestDataSourceConfiguration {
             PostgreSQLContainer("postgres:15-alpine")
                 .withUsername("postgres")
                 .withPassword("password")
-        // TODO: search and maybe ask andrew
-        // ? this is great, but how do we stop the container when we're done????????
+
         postgresContainer.start()
-        // TODO: get the port and then use that instead of hardcoded number in the url
+
         val host = postgresContainer.host
         val port = postgresContainer.firstMappedPort
-        print("\n----> test db host: $host")
-        print("\n----> test db port: $port")
-        print("\n")
-
 
         val dataSource = DataSourceBuilder
             .create()
@@ -61,7 +56,7 @@ class TestDataSourceConfiguration {
         return dataSource
     }
 
-    @Bean("test-named-parameter-jdbc-template")
+    @Bean
     @Primary
     fun namedParameterJdbcTemplate(@Qualifier("test-postgres-datasource") dataSource: DataSource): NamedParameterJdbcTemplate {
         return NamedParameterJdbcTemplate(dataSource)

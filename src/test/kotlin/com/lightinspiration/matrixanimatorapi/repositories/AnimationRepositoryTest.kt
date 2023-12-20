@@ -49,7 +49,7 @@ class AnimationRepositoryTest {
             SELECT * FROM matrix_animator.animations
         """,
         ) { resultSet, _ ->
-            val animation = Animation(
+            val a = Animation(
                 resultSet.getString("title"),
                 resultSet.getInt("user_id"),
                 resultSet.getInt("height"),
@@ -57,7 +57,7 @@ class AnimationRepositoryTest {
                 resultSet.getInt("speed"),
                 objectMapper.readValue(resultSet.getString("frames"), object : TypeReference<List<Frame>>() {})
             )
-            animation
+            a
         }.first()
         assertEquals(animation, actual)
     }

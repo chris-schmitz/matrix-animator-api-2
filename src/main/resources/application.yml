@@ -3,8 +3,9 @@ spring:
     enabled: false
   datasource:
     schmitz-sandbox:
-      jdbc-url: jdbc:postgresql://localhost:5432/schmitz_sandbox
+      jdbc-url: jdbc:postgresql://localhost:5433/postgres
       username: postgres
       password: password
       driver-class-name: org.postgresql.Driver
+      #      jdbc-url: jdbc:postgresql://database:5432/postgres
 #    change-log: classpath:database/changelog.sql

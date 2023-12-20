@@ -46,6 +46,14 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+//sourceSets {
+//    test {
+//        kotlin {
+//            setSrcDirs(listOf("test/kotlin"))
+//        }
+//    }
+//}
+
 tasks {
     val dockerComposeUp by creating(Task::class) {
         description = "Builds app, spins up docker containers, and launches the API."

@@ -1,4 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: "../changesets/animations.sql"
-      relativeToChangelogFile: true

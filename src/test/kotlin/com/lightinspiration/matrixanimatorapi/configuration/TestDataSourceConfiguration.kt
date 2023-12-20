@@ -69,7 +69,7 @@ class TestDataSourceConfiguration {
                 emptyMap()
             ) { ->
                 // TODO: the path should prob be abstracted and passed in as a property
-                val changeLog = File("src/test/resources/db/changelog/db.changelog-master.yaml")
+                val changeLog = File("src/main/resources/db/changelog/db.changelog-master.yaml")
                 val liquibase = Liquibase(
                     changeLog.name,
                     DirectoryResourceAccessor(changeLog.parentFile),

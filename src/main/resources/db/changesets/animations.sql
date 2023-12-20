@@ -1,8 +1,4 @@
---changeset chris:1
--- auto-generated definition
-create schema matrix_animator;
-alter schema matrix_animator owner to postgres;
-
+--changeset chris:2
 create table matrix_animator.animations
 (
     id      serial

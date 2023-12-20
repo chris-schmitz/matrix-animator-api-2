@@ -7,7 +7,6 @@ import liquibase.Scope
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.DirectoryResourceAccessor
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -26,14 +25,14 @@ class DataSourceConfiguration {
     // * our queries from the template level happen within a given database but need to specify the target data starting at the schema level
     @Primary
     @Bean("Postgres DataSource")
-    @ConfigurationProperties("spring.datasource.schmitz-sandbox")
+    //@ConfigurationProperties("spring.datasource.schmitz-sandbox")
     fun postgresDataSource(): DataSource {
         val dataSource = DataSourceBuilder
             .create()
-            //.username("postgres")
-            //.password("password")
-            //.url("jdbc:postgresql://localhost:5433/postgres")
-            //.driverClassName("org.postgresql.Driver")
+            .username("postgres")
+            .password("password")
+            .url("jdbc:postgresql://localhost:5433/postgres")
+            .driverClassName("org.postgresql.Driver")
             .build()
 
         buildSchema(dataSource)

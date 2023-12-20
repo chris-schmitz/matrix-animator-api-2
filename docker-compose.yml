@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      args:
+        - JAR_VERSION=$JAR_VERSION
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+  database:
+    image: postgres:15.5-alpine3.18
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

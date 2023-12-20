@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
+import groovy.lang.MissingPropertyException
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -8,8 +8,10 @@ plugins {
     kotlin("plugin.spring") version "1.9.20"
 }
 
+val environmentVariables = readDotEnvFile()
+
 group = "com.lightinspiration"
-version = "0.0.1-SNAPSHOT"
+version = environmentVariables.getValue("JAR_VERSION")
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -44,20 +46,44 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-// TODO: look up and see if gradle has a springboot gradle plugin similar to the one we use to make the uberjar
-// * Found this here:
-// ? https://stackoverflow.com/a/71092054/1934903
-// * but not sure if this is correct or necessary. The gradle jar
-// * tasks exists even without this task def, but is it that the
-// * below task creates the "uber" jar vs the default gradle jar task
-// * making a smaller jar??
-tasks.jar {
-    archivesName = "coolapp"
-    manifest.attributes["Main-Class"] = "com.lightinspiration.matrixanimatorapi.MatrixAnimatorApiApplication"
-    manifest.attributes["Class-Path"] = configurations
-        .runtimeClasspath
-        .get()
-        .joinToString(separator = " ") { file ->
-            "libs/${file.name}"
+tasks {
+    val dockerComposeUp by creating(Task::class) {
+        description = "Builds app, spins up docker containers, and launches the API."
+        dependsOn(assemble)
+
+        doLast {
+            val command = "JAR_VERSION=$version; echo \$JAR_VERSION; docker-compose up --build --detach"
+            project.exec {
+                commandLine("sh", "-c", command)
+            }
         }
+    }
+    val dockerComposeDown by creating(Task::class) {
+        description = "Pulls a running detached docker servies down."
+        doLast {
+            project.exec {
+                commandLine("sh", "-c", "docker-compose down")
+            }
+        }
+    }
+}
+
+// !--------Build Utilities---------! //
+// * I tried to pull these out to a class, but when I did intellij was _not happy_ about it.
+data class EnvironmentVariable(
+    val name: String,
+    val value: String
+)
+
+fun List<EnvironmentVariable>.getValue(name: String): String {
+    return this.firstOrNull { it.name == name }?.value
+        ?: throw MissingPropertyException("The JAR_VERSION variable is missing from the .env file")
+}
+
+fun readDotEnvFile(): List<EnvironmentVariable> {
+    return File(".env")
+        .bufferedReader()
+        .use { it.readLines() }
+        .map { it.split("=") }
+        .map { EnvironmentVariable(it[0], it[1]) }
 }

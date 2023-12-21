@@ -47,7 +47,7 @@ cd matrix-animator-api-2
 ## Making HTTP calls
 
 I've included the
-file [matrix-animator-api.http](https://github.com/chris-schmitz/matrix-animator-api-2/blob/d6d7e7487ca23a6db950465478e1af06a1076566/matrix-animator-api.http)
+file [matrix-animator-api.http](https://github.com/chris-schmitz/matrix-animator-api-2/blob/main/matrix-animator-api.http)
 that outlines http calls that can be made to the API, their headers, payloads, etc. If you're using Intellij Ultimate
 this file also works with intellij's built in http client :chef-kiss:.
 

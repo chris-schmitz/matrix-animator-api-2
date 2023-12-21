@@ -10,8 +10,10 @@ class AnimationController(
     private val animationService: AnimationService,
 ) {
 
+    // TODO: rip out after adding a legit get call
+    // ! don't forget to pull it out of the http client.
     @GetMapping("/test")
-    fun getAnimations(): String {
+    fun test(): String {
         return "worked again!! :O :O :O :nice:"
     }
 

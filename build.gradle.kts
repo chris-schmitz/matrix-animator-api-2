@@ -21,7 +21,6 @@ repositories {
     mavenCentral()
 }
 
-// TODO: come back and version everything
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:3.2.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.3")
@@ -44,14 +43,6 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
-
-//sourceSets {
-//    test {
-//        kotlin {
-//            setSrcDirs(listOf("test/kotlin"))
-//        }
-//    }
-//}
 
 tasks {
     val dockerComposeUp by creating(Task::class) {

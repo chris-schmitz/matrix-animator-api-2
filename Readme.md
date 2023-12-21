@@ -44,6 +44,13 @@ cd matrix-animator-api-2
 ./gradlew clean test --info 
 ```
 
+## Making HTTP calls
+
+I've included the
+file [matrix-animator-api.http](https://github.com/chris-schmitz/matrix-animator-api-2/blob/d6d7e7487ca23a6db950465478e1af06a1076566/matrix-animator-api.http)
+that outlines http calls that can be made to the API, their headers, payloads, etc. If you're using Intellij Ultimate
+this file also works with intellij's built in http client :chef-kiss:.
+
 ## Details and Idiosyncrasies
 
 Like I stated higher up, I'm using this as a project to explore different tools I use at work. Some of these I have a

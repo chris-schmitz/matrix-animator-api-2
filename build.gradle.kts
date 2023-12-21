@@ -23,15 +23,14 @@ repositories {
 
 // TODO: come back and version everything
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.springframework.boot:spring-boot-starter-jdbc")
-    implementation("org.postgresql:postgresql")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.2.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.3")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.20")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.3")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc:3.2.0")
+    implementation("org.postgresql:postgresql:42.6.0")
     implementation("org.liquibase:liquibase-core:4.25.0")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.0")
     testImplementation("org.testcontainers:postgresql:1.19.3")
 }
 
@@ -85,7 +84,7 @@ data class EnvironmentVariable(
 
 fun List<EnvironmentVariable>.getValue(name: String): String {
     return this.firstOrNull { it.name == name }?.value
-        ?: throw MissingPropertyException("The JAR_VERSION variable is missing from the .env file")
+        ?: throw MissingPropertyException("The $name variable is missing from the .env file")
 }
 
 fun readDotEnvFile(): List<EnvironmentVariable> {

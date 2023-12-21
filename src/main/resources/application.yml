@@ -1,11 +1,14 @@
 spring:
-  #  liquibase:
-  #    enabled: false
+  liquibase:
+    #    enabled: false
+    change-log: classpath:db/changelog/db.changelog-master.yaml
   datasource:
     schmitz-sandbox:
-      jdbc-url: jdbc:postgresql://localhost:5433/postgres
+      jdbc-url: jdbc:postgresql://database:5432/postgres
       username: postgres
       password: password
       driver-class-name: org.postgresql.Driver
       #      jdbc-url: jdbc:postgresql://database:5432/postgres
-#    change-log: classpath:database/changelog.sql
+
+
+

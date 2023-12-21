@@ -7,6 +7,7 @@ import liquibase.Scope
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.DirectoryResourceAccessor
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -25,17 +26,12 @@ class DataSourceConfiguration {
     // * our queries from the template level happen within a given database but need to specify the target data starting at the schema level
     @Primary
     @Bean("Postgres DataSource")
-    //@ConfigurationProperties("spring.datasource.schmitz-sandbox")
+    @ConfigurationProperties("spring.datasource.schmitz-sandbox")
     fun postgresDataSource(): DataSource {
         val dataSource = DataSourceBuilder
             .create()
-            .username("postgres")
-            .password("password")
-            .url("jdbc:postgresql://localhost:5433/postgres")
-            .driverClassName("org.postgresql.Driver")
             .build()
 
-        buildSchema(dataSource)
 
         return dataSource
     }
@@ -45,12 +41,24 @@ class DataSourceConfiguration {
         return NamedParameterJdbcTemplate(dataSource)
     }
 
-    private fun buildSchema(dataSource: DataSource) {
+    private fun buildSchema(
+        dataSource: DataSource
+    ) {
         Scope.child(
             emptyMap()
         ) { ->
             // TODO: the path should prob be abstracted and passed in as a property
-            val changeLog = File("src/main/resources/db/changelog/db.changelog-master.yaml")
+            //val changeLog = File("db/changelog/db.changelog-master.yaml")
+            val changeLog = File(javaClass.classLoader.getResource("db/changelog/db.changelog-master.yaml").file)
+            print("\n")
+            print("\n")
+            print("\n")
+            print("\n")
+            print("====================> $changeLog\n")
+            print(changeLog.parentFile.listFiles())
+            print("\n")
+            print("\n")
+            print("\n")
             val liquibase = Liquibase(
                 changeLog.name,
                 DirectoryResourceAccessor(changeLog.parentFile),

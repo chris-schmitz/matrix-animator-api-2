@@ -27,7 +27,7 @@ class TestDataSourceConfiguration {
     fun testPostgresDataSource(): DataSource {
         val containerConfig = startTestContainer(ContainerConfiguration("postgres", "password"))
         val dataSource = configureDataSource(containerConfig)
-        buildSchema(dataSource)
+        //buildSchema(dataSource)
 
         return dataSource
     }
@@ -64,7 +64,7 @@ class TestDataSourceConfiguration {
                 .build()
         }
 
-        private fun buildSchema(dataSource: DataSource) {
+        fun buildSchema(dataSource: DataSource) {
             Scope.child(
                 emptyMap()
             ) { ->
@@ -90,6 +90,7 @@ class TestDataSourceConfiguration {
                 //    .execute()
             }
         }
+
     }
 }
 

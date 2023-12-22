@@ -31,6 +31,8 @@ dependencies {
     implementation("org.liquibase:liquibase-core:4.25.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.0")
     testImplementation("org.testcontainers:postgresql:1.19.3")
+    testImplementation("org.mockito:mockito-core:5.7.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
 }
 
 tasks.withType<KotlinCompile> {

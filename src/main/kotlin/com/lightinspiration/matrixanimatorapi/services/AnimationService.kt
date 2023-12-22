@@ -12,4 +12,8 @@ class AnimationService(
         animationRepository.save(animation)
     }
 
+    fun getAnimation(id: Int): Animation? {
+        return animationRepository.getAnimation(id)
+    }
+
 }

@@ -2,7 +2,9 @@ package com.lightinspiration.matrixanimatorapi.controllers
 
 import com.lightinspiration.matrixanimatorapi.domain.Animation
 import com.lightinspiration.matrixanimatorapi.services.AnimationService
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/rest/animations")
@@ -10,11 +12,9 @@ class AnimationController(
     private val animationService: AnimationService,
 ) {
 
-    // TODO: rip out after adding a legit get call
-    // ! don't forget to pull it out of the http client.
-    @GetMapping("/test")
-    fun test(): String {
-        return "worked again!! :O :O :O :nice:"
+    @GetMapping("/{id}")
+    fun getAnimation(@PathVariable("id") id: Int): Animation {
+        return animationService.getAnimation(id) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 
     @PostMapping

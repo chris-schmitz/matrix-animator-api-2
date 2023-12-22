@@ -13,12 +13,13 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
+import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 
 
-//TODO: !!!!! WHY DO I HAVE TO CALL LIQUIBASE BY HAND HERE  BUT NOT IN THE INTEGRATION TEST?!?!?!?
 @ActiveProfiles("integration-test", "test")
 @SpringBootTest(
     classes = [
@@ -47,7 +48,7 @@ class AnimationRepositoryTest {
     @Test
     @Transactional
     fun `saveAnimation - can save animation record successfully`() {
-        val animation = Animation("a cool annimation", 1, 8, 8, 1, listOf(Frame(1, listOf(0xFFFFFF, 0xCCCCCC))))
+        val animation = buildAnimation()
 
         animationRepository.save(animation)
 
@@ -71,26 +72,59 @@ class AnimationRepositoryTest {
 
     @Test
     @Transactional
-    fun `1saveAnimation - can save animation record successfully`() {
-        val animation = Animation("a cool annimation", 1, 8, 8, 1, listOf(Frame(1, listOf(0xFFFFFF, 0xCCCCCC))))
+    fun `getAnimation - if animation record exists - can get it by id`() {
+        val expected = buildAnimation()
+        val id = insertAnimationRecord(expected)
 
-        animationRepository.save(animation)
+        val actual = animationRepository.getAnimation(id)
 
-        val actual = namedParameterJdbcTemplate.query(
+        assertEquals(expected.copy(id = id), actual)
+    }
+
+    @Test
+    @Transactional
+    fun `getAnimation - if animation record doesn't exist - expect null`() {
+        val actual = animationRepository.getAnimation(1)
+
+        assertEquals(null, actual)
+    }
+
+    private fun insertAnimationRecord(animation: Animation): Int {
+        val keyHolder = GeneratedKeyHolder()
+        val parameterMap =
+            MapSqlParameterSource()
+                .addValue("title", animation.title)
+                .addValue("frames", objectMapper.writeValueAsString(animation.frames))
+                .addValue("userId", animation.userId)
+                .addValue("height", animation.height)
+                .addValue("width", animation.width)
+                .addValue("speed", animation.speed)
+
+        namedParameterJdbcTemplate.update(
             """
-            SELECT * FROM matrix_animator.animations
-        """,
-        ) { resultSet, _ ->
-            val a = Animation(
-                resultSet.getString("title"),
-                resultSet.getInt("user_id"),
-                resultSet.getInt("height"),
-                resultSet.getInt("width"),
-                resultSet.getInt("speed"),
-                objectMapper.readValue(resultSet.getString("frames"), object : TypeReference<List<Frame>>() {})
+                INSERT INTO matrix_animator.animations
+                (title, frames, user_id, height, width, speed)
+                VALUES
+                (:title, :frames::jsonb, :userId, :height, :width, :speed)
+            """,
+            parameterMap,
+            keyHolder,
+            arrayOf("id")
+        )
+        return keyHolder.keys?.get("id") as Int
+    }
+
+    companion object {
+        fun buildAnimation(id: Int? = null): Animation {
+            return Animation(
+                "a cool animation",
+                1,
+                8,
+                8,
+                1,
+                listOf(Frame(1, listOf(0xFFFFFF, 0xCCCCCC))),
+                id
             )
-            a
         }
-        assertEquals(listOf(animation), actual)
     }
 }

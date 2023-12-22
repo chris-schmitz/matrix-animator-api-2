@@ -6,13 +6,14 @@ import com.lightinspiration.matrixanimatorapi.domain.Frame
 import com.lightinspiration.matrixanimatorapi.services.AnimationService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(controllers = [AnimationController::class])
@@ -24,12 +25,32 @@ class AnimationsWebLayerTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
-    //TODO: ripout once we have a legit get
     @Test
-    fun `can hit test get endpoint`() {
-        mockMvc.perform(get("/rest/animations/test"))
+    fun `getAnimation - can get an animation`() {
+        val id = 1
+        val expected = Animation("an animation", 1, 8, 8, 2, listOf(Frame(0, listOf(0xFFFFFF))), id)
+        whenever(animationService.getAnimation(id))
+            .thenReturn(expected)
+        val request = MockMvcRequestBuilders
+            .get("/rest/animations/$id")
+
+        mockMvc.perform(request)
             .andExpect(status().isOk)
+            .andExpect(content().json(expected.toJson()))
     }
+
+    @Test
+    fun `getAnimation - if record does not exist - expect 404`() {
+        val id = 1
+        whenever(animationService.getAnimation(id))
+            .thenReturn(null)
+        val request = MockMvcRequestBuilders
+            .get("/rest/animations/$id")
+
+        mockMvc.perform(request)
+            .andExpect(status().isNotFound)
+    }
+
 
     @Test
     fun `can save an animation`() {

@@ -11,12 +11,11 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
-import javax.sql.DataSource
 
 
 //TODO: !!!!! WHY DO I HAVE TO CALL LIQUIBASE BY HAND HERE  BUT NOT IN THE INTEGRATION TEST?!?!?!?
@@ -26,7 +25,8 @@ import javax.sql.DataSource
         AnimationRepository::class,
         TestDataSourceConfiguration::class,
         JacksonConfiguration::class,
-        TransactionManagerConfiguration::class
+        TransactionManagerConfiguration::class,
+        LiquibaseAutoConfiguration::class
     ]
 )
 class AnimationRepositoryTest {
@@ -37,16 +37,10 @@ class AnimationRepositoryTest {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    @Autowired
-    @Qualifier("test-postgres-datasource")
-    lateinit var dataSource: DataSource
-
     private lateinit var animationRepository: AnimationRepository
-
 
     @BeforeEach
     fun setUp() {
-        TestDataSourceConfiguration.buildSchema(dataSource)
         animationRepository = AnimationRepository(namedParameterJdbcTemplate, objectMapper)
     }
 

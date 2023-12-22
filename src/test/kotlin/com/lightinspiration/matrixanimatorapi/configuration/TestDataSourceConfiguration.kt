@@ -27,7 +27,6 @@ class TestDataSourceConfiguration {
     fun testPostgresDataSource(): DataSource {
         val containerConfig = startTestContainer(ContainerConfiguration("postgres", "password"))
         val dataSource = configureDataSource(containerConfig)
-        //buildSchema(dataSource)
 
         return dataSource
     }
@@ -64,6 +63,8 @@ class TestDataSourceConfiguration {
                 .build()
         }
 
+        // * keeping this around for now. I have a feeling there's a chance this may be needed once the
+        // * db creds for prod and test are different, but really that _should_ be solve-able via test properties.
         fun buildSchema(dataSource: DataSource) {
             Scope.child(
                 emptyMap()

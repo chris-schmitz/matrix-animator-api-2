@@ -1,6 +1,7 @@
 package com.lightinspiration.matrixanimatorapi.services
 
 import com.lightinspiration.matrixanimatorapi.domain.Animation
+import com.lightinspiration.matrixanimatorapi.domain.AnimationMeta
 import com.lightinspiration.matrixanimatorapi.domain.Frame
 import com.lightinspiration.matrixanimatorapi.repositories.AnimationRepository
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -34,7 +35,7 @@ class AnimationServiceTest {
         assertEquals(expected, actual)
     }
 
-    @Test()
+    @Test
     fun `getAnimation - if animation does not exist - throw 404`() {
         val id = 1
         whenever(animationRepository.getAnimation(id))
@@ -46,6 +47,25 @@ class AnimationServiceTest {
     }
 
     @Test
+    fun `getAnimationsList - if animations exist - expect list of animation metadata`() {
+        val animations = listOf(
+            buildAnimation(1, "animation 1"),
+            buildAnimation(2, "animation 2")
+        )
+        whenever(animationRepository.getAnimations())
+            .thenReturn(animations)
+        val expected = listOf(
+            AnimationMeta(1, "animation 1"),
+            AnimationMeta(2, "animation 2")
+        )
+
+        val actual = animationService.getAnimationList()
+
+        assertEquals(expected, actual)
+    }
+
+
+    @Test
     fun `saveAnimation - can save an animation`() {
         val animation = buildAnimation()
 
@@ -55,9 +75,9 @@ class AnimationServiceTest {
     }
 
     companion object {
-        fun buildAnimation(id: Int? = null): Animation {
+        fun buildAnimation(id: Int? = null, title: String? = null): Animation {
             return Animation(
-                "a cool annimation",
+                title ?: "a cool animation",
                 1,
                 8,
                 8,

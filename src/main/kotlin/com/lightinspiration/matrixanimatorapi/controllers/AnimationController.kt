@@ -1,6 +1,7 @@
 package com.lightinspiration.matrixanimatorapi.controllers
 
 import com.lightinspiration.matrixanimatorapi.domain.Animation
+import com.lightinspiration.matrixanimatorapi.domain.AnimationMeta
 import com.lightinspiration.matrixanimatorapi.services.AnimationService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -15,6 +16,11 @@ class AnimationController(
     @GetMapping("/{id}")
     fun getAnimation(@PathVariable("id") id: Int): Animation {
         return animationService.getAnimation(id) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    }
+
+    @GetMapping
+    fun getAnimationList(): List<AnimationMeta> {
+        return animationService.getAnimationList()
     }
 
     @PostMapping

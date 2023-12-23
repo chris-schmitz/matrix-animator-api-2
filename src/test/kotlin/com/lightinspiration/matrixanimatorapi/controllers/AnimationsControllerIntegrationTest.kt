@@ -3,6 +3,7 @@ package com.lightinspiration.matrixanimatorapi.controllers
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lightinspiration.matrixanimatorapi.domain.Animation
+import com.lightinspiration.matrixanimatorapi.domain.AnimationMeta
 import com.lightinspiration.matrixanimatorapi.domain.Frame
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -13,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
 @ActiveProfiles("integration-test")
@@ -32,6 +34,7 @@ class AnimationsControllerIntegrationTest {
 
 
     @Test
+    @Transactional
     fun `saveAnimation - can save an animation`() {
         val animation = buildAnimationInstance()
 
@@ -41,6 +44,7 @@ class AnimationsControllerIntegrationTest {
     }
 
     @Test
+    @Transactional
     fun `getAnimation - if record exists - can get animation`() {
         val animation = buildAnimationInstance()
         val insertedId = insertAnimationIntoDatabase(animation)
@@ -49,6 +53,25 @@ class AnimationsControllerIntegrationTest {
 
         assertEquals(animation.copy(id = insertedId), actual)
     }
+
+    @Test
+    @Transactional
+    fun `getAnimationList - can get list of animation metadata`() {
+        val animations =
+            listOf(
+                buildAnimationInstance("animation 1"),
+                buildAnimationInstance("animation 2")
+            )
+        val expected = animations.map {
+            val id = insertAnimationIntoDatabase(it)
+            AnimationMeta(id, it.title)
+        }
+
+        val actual = animationController.getAnimationList()
+
+        assertEquals(expected, actual)
+    }
+
 
     private fun insertAnimationIntoDatabase(animation: Animation): Int {
         val keyHolder = GeneratedKeyHolder()
@@ -88,8 +111,8 @@ class AnimationsControllerIntegrationTest {
             a
         }
 
-    private fun buildAnimationInstance() = Animation(
-        "Test animation",
+    private fun buildAnimationInstance(title: String? = null) = Animation(
+        title ?: "Test animation",
         1,
         8,
         8,

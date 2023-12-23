@@ -89,6 +89,24 @@ class AnimationRepositoryTest {
         assertEquals(null, actual)
     }
 
+    @Test
+    @Transactional
+    fun `getAnimations - if animation records exists - can get list`() {
+        val animations = listOf(
+            buildAnimation("animation 1"),
+            buildAnimation("animation 2"),
+        )
+        val expected = animations.map {
+            val id = insertAnimationRecord(it)
+            it.copy(id = id)
+        }
+
+        val actual = animationRepository.getAnimations()
+
+        assertEquals(expected, actual)
+    }
+
+
     private fun insertAnimationRecord(animation: Animation): Int {
         val keyHolder = GeneratedKeyHolder()
         val parameterMap =
@@ -115,9 +133,9 @@ class AnimationRepositoryTest {
     }
 
     companion object {
-        fun buildAnimation(id: Int? = null): Animation {
+        fun buildAnimation(title: String? = null, id: Int? = null): Animation {
             return Animation(
-                "a cool animation",
+                title ?: "a cool animation",
                 1,
                 8,
                 8,

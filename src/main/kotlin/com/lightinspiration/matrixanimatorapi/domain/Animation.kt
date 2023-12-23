@@ -14,4 +14,11 @@ data class Animation(
     fun toJson(): String {
         return ObjectMapper().writeValueAsString(this)
     }
+
+    // TODO: this is kind of ok, but should we solve this via inheritance??? Does it matter?
+    fun getMeta(): AnimationMeta {
+        return AnimationMeta(this.id, this.title)
+    }
 }
+
+data class AnimationMeta(val id: Int? = null, val title: String)

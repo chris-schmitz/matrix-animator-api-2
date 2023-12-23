@@ -72,14 +72,20 @@ tasks {
         }
     }
     val dockerComposeDown by creating(Task::class) {
-        description = "Pulls a running detached docker servies down."
+        description = "Pulls a running detached docker services down."
         doLast {
             project.exec {
                 commandLine("sh", "-c", "docker-compose down")
             }
         }
     }
+    val dockerComposeReload by creating(Task::class) {
+        description = "Reload the docker services if they're already running. Includes jar rebuild."
+        dependsOn(dockerComposeDown)
+        dependsOn(dockerComposeUp)
+    }
 }
+tasks.getByName("dockerComposeUp").mustRunAfter(tasks.getByName("dockerComposeDown"))
 
 // !--------Build Utilities---------! //
 // * I tried to pull these out to a class, but when I did intellij was _not happy_ about it.

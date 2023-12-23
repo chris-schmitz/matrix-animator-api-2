@@ -1,6 +1,7 @@
 package com.lightinspiration.matrixanimatorapi.services
 
 import com.lightinspiration.matrixanimatorapi.domain.Animation
+import com.lightinspiration.matrixanimatorapi.domain.AnimationMeta
 import com.lightinspiration.matrixanimatorapi.repositories.AnimationRepository
 import org.springframework.stereotype.Service
 
@@ -14,6 +15,12 @@ class AnimationService(
 
     fun getAnimation(id: Int): Animation? {
         return animationRepository.getAnimation(id)
+    }
+
+    fun getAnimationList(): List<AnimationMeta> {
+        return animationRepository
+            .getAnimations()
+            .map { it.getMeta() }
     }
 
 }

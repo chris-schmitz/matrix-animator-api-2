@@ -1,5 +1,6 @@
 package com.lightinspiration.matrixanimatorapi.web
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.lightinspiration.matrixanimatorapi.controllers.AnimationController
 import com.lightinspiration.matrixanimatorapi.domain.Animation
 import com.lightinspiration.matrixanimatorapi.domain.Frame
@@ -24,6 +25,9 @@ class AnimationsWebLayerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
+
+    @Autowired
+    private lateinit var objectMapper: ObjectMapper
 
     @Test
     fun `getAnimation - can get an animation`() {
@@ -51,10 +55,27 @@ class AnimationsWebLayerTest {
             .andExpect(status().isNotFound)
     }
 
+    @Test
+    fun `getAnimations - get all animations`() {
+        val expected =
+            listOf(
+                buildAnimation("a cool animation", 1),
+                buildAnimation("another cool animation", 2)
+            )
+                .map { it.getMeta() }
+        whenever(animationService.getAnimationList())
+            .thenReturn(expected)
+        val request = MockMvcRequestBuilders.get("/rest/animations")
+
+        mockMvc.perform(request)
+            .andExpect(status().isOk)
+            .andExpect(content().json(objectMapper.writeValueAsString(expected)))
+    }
+
 
     @Test
     fun `can save an animation`() {
-        val animation = Animation("an animation", 1, 8, 8, 2, listOf(Frame(0, listOf(0xFFFFFF))))
+        val animation = buildAnimation("anAnimation")
         val request = MockMvcRequestBuilders
             .post("/rest/animations")
             .content(animation.toJson())
@@ -66,5 +87,17 @@ class AnimationsWebLayerTest {
         verify(animationService).saveAnimation(animation)
     }
 
-
+    private fun buildAnimation(title: String, id: Int? = null): Animation {
+        return Animation(
+            title,
+            1,
+            8,
+            8,
+            2,
+            listOf(
+                Frame(0, listOf(0xFFFFFF)),
+            ),
+            id
+        )
+    }
 }

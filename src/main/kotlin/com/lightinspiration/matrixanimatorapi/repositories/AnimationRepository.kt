@@ -35,17 +35,17 @@ class AnimationRepository(
     fun getAnimation(id: Int): Animation? {
         return template.query(
             """
-            SELECT 
-                id, title, frames, user_id, height, width, speed
-            FROM 
-                matrix_animator.animations
-            WHERE 
-                id = :id
-        """,
+                $ANIMATION_SELECT_QUERY
+                WHERE id = :id
+            """,
             MapSqlParameterSource().addValue("id", id),
             animationRowMapper
         )
             .firstOrNull()
+    }
+
+    fun getAnimations(): List<Animation> {
+        return template.query(ANIMATION_SELECT_QUERY, animationRowMapper)
     }
 
     private val animationRowMapper: (ResultSet, Int) -> Animation =
@@ -61,4 +61,12 @@ class AnimationRepository(
             )
         }
 
+    companion object {
+        private const val ANIMATION_SELECT_QUERY = """
+            SELECT 
+                id, title, frames, user_id, height, width, speed
+            FROM 
+                matrix_animator.animations
+        """
+    }
 }

@@ -10,6 +10,9 @@ Content-Type: application/json
   "frames": []
 }
 
-### Get all animations
+### Get an animation by id
 @id =1
 GET http://localhost:8080/rest/animations/{{id}}
+
+### Get all animations
+GET http://localhost:8080/rest/animations

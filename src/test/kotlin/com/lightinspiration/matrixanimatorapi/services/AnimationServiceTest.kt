@@ -64,14 +64,23 @@ class AnimationServiceTest {
         assertEquals(expected, actual)
     }
 
-
     @Test
     fun `saveAnimation - can save an animation`() {
         val animation = buildAnimation()
 
         animationService.saveAnimation(animation)
 
-        verify(animationRepository).save(animation)
+        verify(animationRepository).saveAnimation(animation)
+    }
+
+    @Test
+    fun `updateAnimation - can update an animation`() {
+        val id = 10
+        val animation = buildAnimation(id)
+
+        animationService.updateAnimation(id, animation)
+
+        verify(animationRepository).updateAnimation(id, animation)
     }
 
     companion object {

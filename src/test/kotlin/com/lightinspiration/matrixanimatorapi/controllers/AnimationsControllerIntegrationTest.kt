@@ -7,6 +7,7 @@ import com.lightinspiration.matrixanimatorapi.domain.AnimationMeta
 import com.lightinspiration.matrixanimatorapi.domain.Frame
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
@@ -40,7 +41,14 @@ class AnimationsControllerIntegrationTest {
 
         animationController.saveAnimation(animation)
 
-        assertEquals(animation, getAnimationFromDatabase())
+        val actual =
+            getAnimationFromDatabase() ?: fail("Got a null when trying to get animation record from the database.")
+        assertEquals(animation.title, actual.title)
+        assertEquals(animation.height, actual.height)
+        assertEquals(animation.width, actual.width)
+        assertEquals(animation.speed, actual.speed)
+        assertEquals(animation.frames, actual.frames)
+        assert(actual.id != null)
     }
 
     @Test
@@ -72,6 +80,26 @@ class AnimationsControllerIntegrationTest {
         assertEquals(expected, actual)
     }
 
+    @Test
+    @Transactional
+    fun `updateAnimation - can update an existing animation`() {
+        val animation = Animation("original title", 1, 1, 1, 1, emptyList())
+        val id = insertAnimationIntoDatabase(animation)
+        val updatedAnimation = Animation(
+            "New title",
+            2,
+            3,
+            4,
+            5,
+            listOf(Frame(0, listOf(0xFFFFFF))),
+            id
+        )
+
+        animationController.updateAnimation(updatedAnimation)
+
+        assertEquals(updatedAnimation, getAnimationFromDatabase())
+    }
+
 
     private fun insertAnimationIntoDatabase(animation: Animation): Int {
         val keyHolder = GeneratedKeyHolder()
@@ -98,18 +126,26 @@ class AnimationsControllerIntegrationTest {
         return keyHolder.keys?.get("id") as Int
     }
 
-    private fun getAnimationFromDatabase() =
-        jdbcTemplate.queryForObject("""SELECT * FROM matrix_animator.animations LIMIT 1""") { resultSet, _ ->
+    private fun getAnimationFromDatabase(id: Int? = null): Animation? {
+        var query = """SELECT * FROM matrix_animator.animations"""
+        if (id != null) {
+            query += "WHERE id = $id"
+        }
+
+        // TODO: swap out the jdbc template for the full on named jdbc template
+        return jdbcTemplate.queryForObject(query) { resultSet, _ ->
             val a = Animation(
                 resultSet.getString("title"),
                 resultSet.getInt("user_id"),
                 resultSet.getInt("height"),
                 resultSet.getInt("width"),
                 resultSet.getInt("speed"),
-                objectMapper.readValue(resultSet.getString("frames"), object : TypeReference<List<Frame>>() {})
+                objectMapper.readValue(resultSet.getString("frames"), object : TypeReference<List<Frame>>() {}),
+                resultSet.getInt("id")
             )
             a
         }
+    }
 
     private fun buildAnimationInstance(title: String? = null) = Animation(
         title ?: "Test animation",

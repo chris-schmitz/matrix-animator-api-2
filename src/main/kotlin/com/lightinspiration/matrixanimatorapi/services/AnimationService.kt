@@ -10,7 +10,7 @@ class AnimationService(
     val animationRepository: AnimationRepository
 ) {
     fun saveAnimation(animation: Animation) {
-        animationRepository.save(animation)
+        animationRepository.saveAnimation(animation)
     }
 
     fun getAnimation(id: Int): Animation? {
@@ -21,6 +21,10 @@ class AnimationService(
         return animationRepository
             .getAnimations()
             .map { it.getMeta() }
+    }
+
+    fun updateAnimation(id: Int, animation: Animation) {
+        animationRepository.updateAnimation(id, animation)
     }
 
 }

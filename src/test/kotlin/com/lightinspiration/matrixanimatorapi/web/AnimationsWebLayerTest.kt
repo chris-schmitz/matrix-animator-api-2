@@ -7,6 +7,7 @@ import com.lightinspiration.matrixanimatorapi.domain.Frame
 import com.lightinspiration.matrixanimatorapi.services.AnimationService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -74,7 +75,7 @@ class AnimationsWebLayerTest {
 
 
     @Test
-    fun `can save an animation`() {
+    fun `saveAnimation - can save an animation`() {
         val animation = buildAnimation("anAnimation")
         val request = MockMvcRequestBuilders
             .post("/rest/animations")
@@ -86,6 +87,35 @@ class AnimationsWebLayerTest {
 
         verify(animationService).saveAnimation(animation)
     }
+
+    @Test
+    fun `updateAnimation - can update an animation`() {
+        val animation = buildAnimation("anAnimation", 10)
+        val request = MockMvcRequestBuilders
+            .put("/rest/animations")
+            .content(animation.toJson())
+            .contentType(APPLICATION_JSON)
+
+        mockMvc.perform(request)
+            .andExpect(status().isOk)
+
+        verify(animationService).updateAnimation(animation.id!!, animation)
+    }
+
+    @Test
+    fun `updateAnimation - if an animation does not have an id - expect a 422`() {
+        val animation = buildAnimation("anAnimation")
+        val request = MockMvcRequestBuilders
+            .put("/rest/animations")
+            .content(animation.toJson())
+            .contentType(APPLICATION_JSON)
+
+        mockMvc.perform(request)
+            .andExpect(status().isUnprocessableEntity)
+
+        verifyNoMoreInteractions(animationService)
+    }
+
 
     private fun buildAnimation(title: String, id: Int? = null): Animation {
         return Animation(

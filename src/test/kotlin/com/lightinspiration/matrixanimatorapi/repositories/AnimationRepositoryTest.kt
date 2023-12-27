@@ -50,7 +50,7 @@ class AnimationRepositoryTest {
     fun `saveAnimation - can save animation record successfully`() {
         val animation = buildAnimation()
 
-        animationRepository.save(animation)
+        animationRepository.saveAnimation(animation)
 
         val actual = namedParameterJdbcTemplate.query(
             """
@@ -69,6 +69,37 @@ class AnimationRepositoryTest {
         }
         assertEquals(listOf(animation), actual)
     }
+
+    @Test
+    @Transactional
+    fun `updateAnimation - can update an existing animation record successfully`() {
+        insertAnimationRecord(Animation("not target animation", 1, 1, 1, 1, emptyList()))
+        val animation = Animation("target animation", 1, 1, 1, 1, emptyList())
+        val id = insertAnimationRecord(animation)
+        val updatedAnimation = Animation("New title", 2, 3, 4, 5, listOf(Frame(0, listOf(0xFFFFFF))))
+
+        animationRepository.updateAnimation(id, updatedAnimation)
+
+        val actual = namedParameterJdbcTemplate.query(
+            """
+            SELECT * FROM matrix_animator.animations WHERE :id = id
+        """,
+            MapSqlParameterSource()
+                .addValue("id", id)
+        ) { resultSet, _ ->
+            return@query Animation(
+                resultSet.getString("title"),
+                resultSet.getInt("user_id"),
+                resultSet.getInt("height"),
+                resultSet.getInt("width"),
+                resultSet.getInt("speed"),
+                objectMapper.readValue(resultSet.getString("frames"), object : TypeReference<List<Frame>>() {}),
+                resultSet.getInt("id")
+            )
+        }
+        assertEquals(listOf(updatedAnimation.copy(id = id)), actual)
+    }
+
 
     @Test
     @Transactional

@@ -14,23 +14,6 @@ class AnimationRepository(
     private val template: NamedParameterJdbcTemplate,
     private val objectMapper: ObjectMapper
 ) {
-    fun save(animation: Animation) {
-        template.update(
-            """
-                INSERT INTO matrix_animator.animations
-                (title, frames, user_id, height, width, speed)
-                VALUES
-                (:title, :frames::jsonb, :userId, :height, :width, :speed)
-            """,
-            MapSqlParameterSource()
-                .addValue("title", animation.title)
-                .addValue("frames", objectMapper.writeValueAsString(animation.frames))
-                .addValue("userId", animation.userId)
-                .addValue("height", animation.height)
-                .addValue("width", animation.width)
-                .addValue("speed", animation.speed)
-        )
-    }
 
     fun getAnimation(id: Int): Animation? {
         return template.query(
@@ -47,6 +30,41 @@ class AnimationRepository(
     fun getAnimations(): List<Animation> {
         return template.query(ANIMATION_SELECT_QUERY, animationRowMapper)
     }
+
+    fun saveAnimation(animation: Animation) {
+        template.update(
+            """
+            INSERT INTO matrix_animator.animations
+            (title, frames, user_id, height, width, speed)
+            VALUES
+            (:title, :frames::jsonb, :userId, :height, :width, :speed)
+            """,
+            mapAnimationToParameters(animation)
+        )
+    }
+
+    fun updateAnimation(id: Int, animation: Animation) {
+        template.update(
+            """
+            UPDATE matrix_animator.animations 
+            SET 
+            (title, user_id, height, width, speed, frames)
+            = 
+            (:title, :userId, :height, :width, :speed, :frames::jsonb)
+            WHERE id = :id
+            """,
+            mapAnimationToParameters(animation).apply { addValue("id", id) }
+        )
+    }
+
+    private fun mapAnimationToParameters(animation: Animation) =
+        MapSqlParameterSource()
+            .addValue("title", animation.title)
+            .addValue("frames", objectMapper.writeValueAsString(animation.frames))
+            .addValue("userId", animation.userId)
+            .addValue("height", animation.height)
+            .addValue("width", animation.width)
+            .addValue("speed", animation.speed)
 
     private val animationRowMapper: (ResultSet, Int) -> Animation =
         { resultSet, _ ->

@@ -16,3 +16,16 @@ GET http://localhost:8080/rest/animations/{{id}}
 
 ### Get all animations
 GET http://localhost:8080/rest/animations
+
+### Update existing animation
+PUT http://localhost:8080/rest/animations
+Content-Type: application/json
+
+{
+  "title": "Updated animation",
+  "frames": [],
+  "id": 34,
+  "height": 1,
+  "width": 2,
+  "speed": 3
+}

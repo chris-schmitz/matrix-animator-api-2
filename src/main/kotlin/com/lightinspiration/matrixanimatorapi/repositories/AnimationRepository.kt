@@ -57,6 +57,16 @@ class AnimationRepository(
         )
     }
 
+    fun deleteAnimation(id: Int): Int {
+        return template.update(
+            """
+                DELETE FROM matrix_animator.animations
+                WHERE id = :id
+            """,
+            MapSqlParameterSource().addValue("id", id)
+        )
+    }
+
     private fun mapAnimationToParameters(animation: Animation) =
         MapSqlParameterSource()
             .addValue("title", animation.title)

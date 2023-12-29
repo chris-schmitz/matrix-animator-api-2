@@ -10,6 +10,7 @@ import com.lightinspiration.matrixanimatorapi.domain.Frame
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
@@ -50,6 +51,7 @@ class AnimationRepositoryTest {
     fun `saveAnimation - can save animation record successfully`() {
         val animation = buildAnimation()
 
+        //TODO: return the id and then make sure you're getting the exact record, not just whatever first one is returned
         animationRepository.saveAnimation(animation)
 
         val actual = namedParameterJdbcTemplate.query(
@@ -80,24 +82,31 @@ class AnimationRepositoryTest {
 
         animationRepository.updateAnimation(id, updatedAnimation)
 
-        val actual = namedParameterJdbcTemplate.query(
-            """
-            SELECT * FROM matrix_animator.animations WHERE :id = id
-        """,
-            MapSqlParameterSource()
-                .addValue("id", id)
-        ) { resultSet, _ ->
-            return@query Animation(
-                resultSet.getString("title"),
-                resultSet.getInt("user_id"),
-                resultSet.getInt("height"),
-                resultSet.getInt("width"),
-                resultSet.getInt("speed"),
-                objectMapper.readValue(resultSet.getString("frames"), object : TypeReference<List<Frame>>() {}),
-                resultSet.getInt("id")
-            )
-        }
+        val actual = getAnimationRecord(id)
         assertEquals(listOf(updatedAnimation.copy(id = id)), actual)
+    }
+
+
+    @Test
+    @Transactional
+    fun `deleteAnimation - can delete an animation record`() {
+        insertAnimationRecord(Animation("first animation", 1, 1, 1, 1, emptyList()))
+        val id = insertAnimationRecord(Animation("second animation", 1, 1, 1, 1, emptyList()))
+
+        val numberOfRowsAffected = animationRepository.deleteAnimation(id)
+
+        assertEquals(1, numberOfRowsAffected)
+        assertThrows<NoSuchElementException> {
+            getAnimationRecord(id)
+        }
+    }
+
+    @Test
+    @Transactional
+    fun `deleteAnimation - if record doesn't exist to delete - expect exception`() {
+        val numberOfRowsAffected = animationRepository.deleteAnimation(999)
+
+        assertEquals(0, numberOfRowsAffected)
     }
 
 
@@ -161,6 +170,27 @@ class AnimationRepositoryTest {
             arrayOf("id")
         )
         return keyHolder.keys?.get("id") as Int
+    }
+
+    private fun getAnimationRecord(id: Int): Animation {
+        return namedParameterJdbcTemplate.query(
+            """
+            SELECT * FROM matrix_animator.animations WHERE :id = id
+        """,
+            MapSqlParameterSource()
+                .addValue("id", id)
+        ) { resultSet, _ ->
+            return@query Animation(
+                resultSet.getString("title"),
+                resultSet.getInt("user_id"),
+                resultSet.getInt("height"),
+                resultSet.getInt("width"),
+                resultSet.getInt("speed"),
+                objectMapper.readValue(resultSet.getString("frames"), object : TypeReference<List<Frame>>() {}),
+                resultSet.getInt("id")
+            )
+        }
+            .first()
     }
 
     companion object {

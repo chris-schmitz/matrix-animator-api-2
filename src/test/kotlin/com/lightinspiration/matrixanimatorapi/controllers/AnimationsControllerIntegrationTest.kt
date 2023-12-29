@@ -42,7 +42,8 @@ class AnimationsControllerIntegrationTest {
         animationController.saveAnimation(animation)
 
         val actual =
-            getAnimationFromDatabase() ?: fail("Got a null when trying to get animation record from the database.")
+            getAnimationsFromDatabase().first()
+                ?: fail("Got a null when trying to get animation record from the database.")
         assertEquals(animation.title, actual.title)
         assertEquals(animation.height, actual.height)
         assertEquals(animation.width, actual.width)
@@ -97,7 +98,27 @@ class AnimationsControllerIntegrationTest {
 
         animationController.updateAnimation(updatedAnimation)
 
-        assertEquals(updatedAnimation, getAnimationFromDatabase())
+        assertEquals(updatedAnimation, getAnimationsFromDatabase().first())
+    }
+
+    @Test
+    @Transactional
+    fun `deleteAnimation - can delete an existing animation`() {
+        val animations = listOf(
+            Animation("animation 1", 1, 1, 1, 1, emptyList()),
+            Animation("animation 2", 1, 1, 1, 1, emptyList()),
+            Animation("animation 3", 1, 1, 1, 1, emptyList()),
+        )
+        val insertedAnimations = animations
+            .map { it.copy(id = insertAnimationIntoDatabase(it)) }
+
+        animationController.deleteAnimation(insertedAnimations[1].id!!)
+
+        val actual = getAnimationsFromDatabase()
+        assertEquals(
+            listOf(insertedAnimations[0], insertedAnimations[2]),
+            actual
+        )
     }
 
 
@@ -126,15 +147,18 @@ class AnimationsControllerIntegrationTest {
         return keyHolder.keys?.get("id") as Int
     }
 
-    private fun getAnimationFromDatabase(id: Int? = null): Animation? {
+    private fun getAnimationsFromDatabase(id: Int? = null): List<Animation> {
         var query = """SELECT * FROM matrix_animator.animations"""
         if (id != null) {
-            query += "WHERE id = $id"
+            query += " WHERE id = $id"
         }
 
-        // TODO: swap out the jdbc template for the full on named jdbc template
-        return jdbcTemplate.queryForObject(query) { resultSet, _ ->
-            val a = Animation(
+        return namedParameterJdbcTemplate.query(
+            query,
+            MapSqlParameterSource()
+                .addValue("id", id)
+        ) { resultSet, _ ->
+            return@query Animation(
                 resultSet.getString("title"),
                 resultSet.getInt("user_id"),
                 resultSet.getInt("height"),
@@ -143,7 +167,6 @@ class AnimationsControllerIntegrationTest {
                 objectMapper.readValue(resultSet.getString("frames"), object : TypeReference<List<Frame>>() {}),
                 resultSet.getInt("id")
             )
-            a
         }
     }
 

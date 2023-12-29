@@ -37,4 +37,9 @@ class AnimationController(
             throw ResponseStatusException(UNPROCESSABLE_ENTITY, "We can't update an animation without it's ID.")
 
     }
+
+    @DeleteMapping("/{id}")
+    fun deleteAnimation(@PathVariable("id") id: Int) {
+        animationService.deleteAnimation(id)
+    }
 }

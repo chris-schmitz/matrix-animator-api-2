@@ -27,4 +27,8 @@ class AnimationService(
         animationRepository.updateAnimation(id, animation)
     }
 
+    fun deleteAnimation(id: Int) {
+        animationRepository.deleteAnimation(id)
+    }
+
 }

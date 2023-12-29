@@ -117,6 +117,19 @@ class AnimationsWebLayerTest {
     }
 
 
+    @Test
+    fun `deleteAnimation - can delete an existing animation`() {
+        val id = 3
+        val request = MockMvcRequestBuilders
+            .delete("/rest/animations/$id")
+            .contentType(APPLICATION_JSON)
+
+        mockMvc.perform(request)
+            .andExpect(status().isOk)
+
+        verify(animationService).deleteAnimation(3)
+    }
+
     private fun buildAnimation(title: String, id: Int? = null): Animation {
         return Animation(
             title,

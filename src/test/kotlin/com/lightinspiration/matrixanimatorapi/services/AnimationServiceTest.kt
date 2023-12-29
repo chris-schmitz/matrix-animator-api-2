@@ -73,6 +73,7 @@ class AnimationServiceTest {
         verify(animationRepository).saveAnimation(animation)
     }
 
+
     @Test
     fun `updateAnimation - can update an animation`() {
         val id = 10
@@ -81,6 +82,15 @@ class AnimationServiceTest {
         animationService.updateAnimation(id, animation)
 
         verify(animationRepository).updateAnimation(id, animation)
+    }
+
+    @Test
+    fun `deleteAnimation - can delete an animation`() {
+        val id = 10
+
+        animationService.deleteAnimation(id)
+
+        verify(animationRepository).deleteAnimation(id)
     }
 
     companion object {

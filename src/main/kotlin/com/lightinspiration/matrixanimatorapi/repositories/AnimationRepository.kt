@@ -6,6 +6,7 @@ import com.lightinspiration.matrixanimatorapi.domain.Animation
 import com.lightinspiration.matrixanimatorapi.domain.Frame
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
+import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
 
@@ -31,7 +32,8 @@ class AnimationRepository(
         return template.query(ANIMATION_SELECT_QUERY, animationRowMapper)
     }
 
-    fun saveAnimation(animation: Animation) {
+    fun saveAnimation(animation: Animation): Int {
+        val keyholder = GeneratedKeyHolder()
         template.update(
             """
             INSERT INTO matrix_animator.animations
@@ -39,8 +41,10 @@ class AnimationRepository(
             VALUES
             (:title, :frames::jsonb, :userId, :height, :width, :speed)
             """,
-            mapAnimationToParameters(animation)
+            mapAnimationToParameters(animation),
+            keyholder
         )
+        return keyholder.keys?.get("id") as Int
     }
 
     fun updateAnimation(id: Int, animation: Animation) {

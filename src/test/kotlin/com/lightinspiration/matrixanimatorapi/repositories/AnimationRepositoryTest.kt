@@ -51,25 +51,10 @@ class AnimationRepositoryTest {
     fun `saveAnimation - can save animation record successfully`() {
         val animation = buildAnimation()
 
-        //TODO: return the id and then make sure you're getting the exact record, not just whatever first one is returned
-        animationRepository.saveAnimation(animation)
+        val id = animationRepository.saveAnimation(animation)
 
-        val actual = namedParameterJdbcTemplate.query(
-            """
-            SELECT * FROM matrix_animator.animations
-        """,
-        ) { resultSet, _ ->
-            val a = Animation(
-                resultSet.getString("title"),
-                resultSet.getInt("user_id"),
-                resultSet.getInt("height"),
-                resultSet.getInt("width"),
-                resultSet.getInt("speed"),
-                objectMapper.readValue(resultSet.getString("frames"), object : TypeReference<List<Frame>>() {})
-            )
-            a
-        }
-        assertEquals(listOf(animation), actual)
+        val actual = getAnimationRecord(id)
+        assertEquals(animation.copy(id = id), actual)
     }
 
     @Test
@@ -82,8 +67,7 @@ class AnimationRepositoryTest {
 
         animationRepository.updateAnimation(id, updatedAnimation)
 
-        val actual = getAnimationRecord(id)
-        assertEquals(listOf(updatedAnimation.copy(id = id)), actual)
+        assertEquals(updatedAnimation.copy(id = id), getAnimationRecord(id))
     }
 
 
@@ -103,7 +87,7 @@ class AnimationRepositoryTest {
 
     @Test
     @Transactional
-    fun `deleteAnimation - if record doesn't exist to delete - expect exception`() {
+    fun `deleteAnimation - if record doesn't exist to delete - expect no record change`() {
         val numberOfRowsAffected = animationRepository.deleteAnimation(999)
 
         assertEquals(0, numberOfRowsAffected)

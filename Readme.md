@@ -34,8 +34,14 @@ To get the project up and running:
 git clone git@github.com:chris-schmitz/matrix-animator-api-2.git
 cd matrix-animator-api-2
 
+# To list all of the gradle tasks, including the ones custom to this project:
+./gradlew tasks --all
+
 # To launch a local instance of the project (note this will launch detached):
 ./gradlew dockerComposeUp
+
+# To rebuild the jar and relaunch an already running list of services:
+./gradlew dockerComposeReload
 
 # To stop the local instance of the project:
 ./gradlew dockerComposeDown

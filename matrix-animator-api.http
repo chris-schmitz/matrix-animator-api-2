@@ -1,6 +1,3 @@
-### Test
-GET http://localhost:8080/rest/animations/test
-
 ### save an animation
 POST http://localhost:8080/rest/animations
 Content-Type: application/json
@@ -10,6 +7,30 @@ Content-Type: application/json
   "frames": []
 }
 
-#### Get all animations
-#GET http://localhost:8080/rest/animations/
-#
+### Get an animation by id
+< {%
+    request.variables.set("id", "35")
+%}
+GET http://localhost:8080/rest/animations/{{id}}
+
+### Get all animations
+GET http://localhost:8080/rest/animations
+
+### Update existing animation
+PUT http://localhost:8080/rest/animations
+Content-Type: application/json
+
+{
+  "title": "Updated animation",
+  "frames": [],
+  "id": 34,
+  "height": 1,
+  "width": 2,
+  "speed": 3
+}
+
+### Delete a specific animation
+< {%
+    request.variables.set("id", "38")
+%}
+DELETE http://localhost:8080/rest/animations/{{id}}

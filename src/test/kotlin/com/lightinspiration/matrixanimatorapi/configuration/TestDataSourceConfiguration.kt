@@ -1,12 +1,5 @@
 package com.lightinspiration.matrixanimatorapi.configuration
 
-import liquibase.Contexts
-import liquibase.LabelExpression
-import liquibase.Liquibase
-import liquibase.Scope
-import liquibase.database.DatabaseFactory
-import liquibase.database.jvm.JdbcConnection
-import liquibase.resource.DirectoryResourceAccessor
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.Bean
@@ -14,7 +7,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.testcontainers.containers.PostgreSQLContainer
-import java.io.File
 import javax.sql.DataSource
 
 @Configuration("test-datasource-configuration")
@@ -62,36 +54,6 @@ class TestDataSourceConfiguration {
                 }
                 .build()
         }
-
-        // * keeping this around for now. I have a feeling there's a chance this may be needed once the
-        // * db creds for prod and test are different, but really that _should_ be solve-able via test properties.
-        fun buildSchema(dataSource: DataSource) {
-            Scope.child(
-                emptyMap()
-            ) { ->
-                // TODO: the path should prob be abstracted and passed in as a property
-                val changeLog = File("src/main/resources/db/changelog/db.changelog-master.yaml")
-                val liquibase = Liquibase(
-                    changeLog.name,
-                    DirectoryResourceAccessor(changeLog.parentFile),
-                    DatabaseFactory.getInstance()
-                        .findCorrectDatabaseImplementation(JdbcConnection(dataSource.connection))
-                )
-                liquibase.update(Contexts(), LabelExpression())
-                // * From what I'm reading this _should_ be the non-deprecated approach to starting and running liquibase,
-                // * but it doesn't work and I'm tired of fiddling with it :|
-                //val database =
-                //    DatabaseFactory.getInstance().findCorrectDatabaseImplementation(JdbcConnection(dataSource.connection))
-                //CommandScope(UpdateCommandStep.COMMAND_NAME.first())
-                //    .addArgumentValue(DbUrlConnectionCommandStep.DATABASE_ARG, database)
-                //    .addArgumentValue(
-                //        UpdateCommandStep.CHANGELOG_FILE_ARG,
-                //        "src/test/resources/db/changelog/db.changelog-master.yaml"
-                //    )
-                //    .execute()
-            }
-        }
-
     }
 }
 

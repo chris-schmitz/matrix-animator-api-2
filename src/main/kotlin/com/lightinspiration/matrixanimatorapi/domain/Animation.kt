@@ -1,5 +1,6 @@
 package com.lightinspiration.matrixanimatorapi.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.databind.ObjectMapper
 
 data class Animation(
@@ -14,4 +15,11 @@ data class Animation(
     fun toJson(): String {
         return ObjectMapper().writeValueAsString(this)
     }
+
+    @JsonIgnore
+    fun getMeta(): AnimationMeta {
+        return AnimationMeta(this.id, this.title)
+    }
 }
+
+data class AnimationMeta(val id: Int? = null, val title: String)

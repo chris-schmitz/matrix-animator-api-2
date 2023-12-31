@@ -20,7 +20,7 @@ class AnimationService(
     fun getAnimationList(): List<AnimationMeta> {
         return animationRepository
             .getAnimations()
-            .map { it.getMeta() }
+            .map { it.metadata() }
     }
 
     fun updateAnimation(id: Int, animation: Animation) {

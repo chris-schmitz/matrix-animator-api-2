@@ -63,7 +63,7 @@ class AnimationsWebLayerTest {
                 buildAnimation("a cool animation", 1),
                 buildAnimation("another cool animation", 2)
             )
-                .map { it.getMeta() }
+                .map { it.metadata() }
         whenever(animationService.getAnimationList())
             .thenReturn(expected)
         val request = MockMvcRequestBuilders.get("/rest/animations")

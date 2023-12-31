@@ -39,17 +39,17 @@ class AnimationsControllerIntegrationTest {
     fun `saveAnimation - can save an animation`() {
         val animation = buildAnimationInstance()
 
-        animationController.saveAnimation(animation)
+        val storedAnimationId = animationController.saveAnimation(animation)
 
         val actual =
-            getAnimationsFromDatabase().first()
+            getAnimationsFromDatabase().first { it.id == storedAnimationId }
                 ?: fail("Got a null when trying to get animation record from the database.")
         assertEquals(animation.title, actual.title)
         assertEquals(animation.height, actual.height)
         assertEquals(animation.width, actual.width)
         assertEquals(animation.speed, actual.speed)
         assertEquals(animation.frames, actual.frames)
-        assert(actual.id != null)
+        assertEquals(storedAnimationId, actual.id)
     }
 
     @Test

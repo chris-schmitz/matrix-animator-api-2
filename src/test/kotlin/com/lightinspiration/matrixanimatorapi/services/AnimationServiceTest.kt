@@ -65,12 +65,15 @@ class AnimationServiceTest {
     }
 
     @Test
-    fun `saveAnimation - can save an animation`() {
+    fun `saveAnimation - can save an animation and return the stored id`() {
         val animation = buildAnimation()
+        val storedAnimationId = 5
+        whenever(animationRepository.saveAnimation(animation))
+            .thenReturn(storedAnimationId)
 
-        animationService.saveAnimation(animation)
+        val actual = animationService.saveAnimation(animation)
 
-        verify(animationRepository).saveAnimation(animation)
+        assertEquals(storedAnimationId, actual)
     }
 
 

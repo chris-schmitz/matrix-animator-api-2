@@ -4,8 +4,14 @@ Content-Type: application/json
 
 {
   "title": "Test",
-  "frames": []
+  "frames": [],
+  "width": 0,
+  "id": 0,
+  "userId": 0,
+  "speed": 0,
+  "height": 0
 }
+
 
 ### Get an animation by id
 < {%
@@ -34,3 +40,4 @@ Content-Type: application/json
     request.variables.set("id", "38")
 %}
 DELETE http://localhost:8080/rest/animations/{{id}}
+

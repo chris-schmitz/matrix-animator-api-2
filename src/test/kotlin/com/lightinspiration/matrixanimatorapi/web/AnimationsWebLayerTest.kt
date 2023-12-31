@@ -76,7 +76,10 @@ class AnimationsWebLayerTest {
 
     @Test
     fun `saveAnimation - can save an animation`() {
+        val storedAnimationId = 3
         val animation = buildAnimation("anAnimation")
+        whenever(animationService.saveAnimation(animation))
+            .thenReturn(storedAnimationId)
         val request = MockMvcRequestBuilders
             .post("/rest/animations")
             .content(animation.toJson())
@@ -84,8 +87,8 @@ class AnimationsWebLayerTest {
 
         mockMvc.perform(request)
             .andExpect(status().isOk)
+            .andExpect(content().string(storedAnimationId.toString()))
 
-        verify(animationService).saveAnimation(animation)
     }
 
     @Test

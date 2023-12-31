@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service
 class AnimationService(
     val animationRepository: AnimationRepository
 ) {
-    fun saveAnimation(animation: Animation) {
-        animationRepository.saveAnimation(animation)
+    fun saveAnimation(animation: Animation): Int {
+        return animationRepository.saveAnimation(animation)
     }
 
     fun getAnimation(id: Int): Animation? {

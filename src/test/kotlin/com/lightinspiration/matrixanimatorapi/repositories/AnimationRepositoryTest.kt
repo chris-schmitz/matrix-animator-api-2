@@ -48,7 +48,7 @@ class AnimationRepositoryTest {
 
     @Test
     @Transactional
-    fun `saveAnimation - can save animation record successfully`() {
+    fun `saveAnimation - can save animation record successfully with the stored id returned`() {
         val animation = buildAnimation()
 
         val id = animationRepository.saveAnimation(animation)

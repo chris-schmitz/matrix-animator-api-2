@@ -25,8 +25,8 @@ class AnimationController(
     }
 
     @PostMapping
-    fun saveAnimation(@RequestBody animation: Animation) {
-        animationService.saveAnimation(animation)
+    fun saveAnimation(@RequestBody animation: Animation): Int {
+        return animationService.saveAnimation(animation)
     }
 
     @PutMapping

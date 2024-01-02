@@ -5,8 +5,8 @@ spring:
     schmitz-sandbox:
       # ! Note that the host is `database` which is the name of the database service running
       # ! postgres in docker-compose.yml
-      jdbc-url: jdbc:postgresql://localhost:5433/postgres
-      #      jdbc-url: jdbc:postgresql://database:5432/postgres
+      #      jdbc-url: jdbc:postgresql://localhost:5433/postgres
+      jdbc-url: jdbc:postgresql://database:5432/postgres
       username: postgres
       password: password # TODO: figure out how to pull this out to .env and inject it on launch. gradle task??
       driver-class-name: org.postgresql.Driver

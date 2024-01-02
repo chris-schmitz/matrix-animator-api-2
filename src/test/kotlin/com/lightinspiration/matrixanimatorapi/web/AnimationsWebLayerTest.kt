@@ -7,7 +7,6 @@ import com.lightinspiration.matrixanimatorapi.domain.Frame
 import com.lightinspiration.matrixanimatorapi.services.AnimationService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -93,31 +92,42 @@ class AnimationsWebLayerTest {
 
     @Test
     fun `updateAnimation - can update an animation`() {
-        val animation = buildAnimation("anAnimation", 10)
+        val animationId = 10
+        val animation = buildAnimation("anAnimation", animationId)
+        whenever(animationService.updateAnimation(animation.id!!, animation))
+            .thenReturn(animationId)
         val request = MockMvcRequestBuilders
-            .put("/rest/animations")
+            .put("/rest/animations/${animation.id}")
             .content(animation.toJson())
             .contentType(APPLICATION_JSON)
 
         mockMvc.perform(request)
             .andExpect(status().isOk)
-
-        verify(animationService).updateAnimation(animation.id!!, animation)
+            .andExpect(content().string(animation.id.toString()))
     }
 
-    @Test
-    fun `updateAnimation - if an animation does not have an id - expect a 422`() {
-        val animation = buildAnimation("anAnimation")
-        val request = MockMvcRequestBuilders
-            .put("/rest/animations")
-            .content(animation.toJson())
-            .contentType(APPLICATION_JSON)
-
-        mockMvc.perform(request)
-            .andExpect(status().isUnprocessableEntity)
-
-        verifyNoMoreInteractions(animationService)
-    }
+    //@Test
+    //fun `updateAnimation - if there isn't an animation record to update - expect a 422`() {
+    //    val badId = 9999
+    //    val animation = buildAnimation("anAnimation")
+    // TODO ask andrew about this
+    // * this is the exception that I want to throw, but it's really being thrown at the repository level, which I can't get to from here
+    // * because I'm mocking at the service level. I figured that I could still throw from the mock here to at least assert the conversion from
+    // * the internal exception to the http status exception, but when I do I get an error that the service isn't supposed to raise that checked
+    // * exception.
+    // * at the moment I'm going to put the check in the integration test, which maybe it belongs in anyway, but I figured this would be a good
+    // * place to have all of the http-y stuff. What's his opinion on approach??
+    //    whenever(animationService.updateAnimation(badId, animation)).thenThrow(NoRecordToUpdateException("can't do it"))
+    //    val request = MockMvcRequestBuilders
+    //        .put("/rest/animations/$badId")
+    //        .content(animation.toJson())
+    //        .contentType(APPLICATION_JSON)
+    //
+    //    mockMvc.perform(request)
+    //        .andExpect(status().isUnprocessableEntity)
+    //
+    //    verifyNoMoreInteractions(animationService)
+    //}
 
 
     @Test

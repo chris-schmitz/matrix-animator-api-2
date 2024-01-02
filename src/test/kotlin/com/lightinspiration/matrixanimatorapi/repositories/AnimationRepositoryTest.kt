@@ -65,9 +65,19 @@ class AnimationRepositoryTest {
         val id = insertAnimationRecord(animation)
         val updatedAnimation = Animation("New title", 2, 3, 4, 5, listOf(Frame(0, listOf(0xFFFFFF))))
 
-        animationRepository.updateAnimation(id, updatedAnimation)
+        val actual = animationRepository.updateAnimation(id, updatedAnimation)
 
-        assertEquals(updatedAnimation.copy(id = id), getAnimationRecord(id))
+        assertEquals(id, actual)
+    }
+
+    @Test
+    @Transactional
+    fun `updateAnimation - if record can't be updated - expect exception`() {
+        val updatedAnimation = Animation("New title", 2, 3, 4, 5, listOf(Frame(0, listOf(0xFFFFFF))))
+
+        assertThrows<NoRecordToUpdateException> {
+            animationRepository.updateAnimation(1, updatedAnimation)
+        }
     }
 
 

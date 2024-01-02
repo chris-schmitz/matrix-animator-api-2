@@ -23,8 +23,8 @@ class AnimationService(
             .map { it.metadata() }
     }
 
-    fun updateAnimation(id: Int, animation: Animation) {
-        animationRepository.updateAnimation(id, animation)
+    fun updateAnimation(id: Int, animation: Animation): Int {
+        return animationRepository.updateAnimation(id, animation)
     }
 
     fun deleteAnimation(id: Int) {

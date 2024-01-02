@@ -2,6 +2,7 @@ package com.lightinspiration.matrixanimatorapi.controllers
 
 import com.lightinspiration.matrixanimatorapi.domain.Animation
 import com.lightinspiration.matrixanimatorapi.domain.AnimationMeta
+import com.lightinspiration.matrixanimatorapi.repositories.NoRecordToUpdateException
 import com.lightinspiration.matrixanimatorapi.services.AnimationService
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY
@@ -29,12 +30,13 @@ class AnimationController(
         return animationService.saveAnimation(animation)
     }
 
-    @PutMapping
-    fun updateAnimation(@RequestBody animation: Animation) {
-        return if (animation.id != null)
-            animationService.updateAnimation(animation.id, animation)
-        else
+    @PutMapping("/{id}")
+    fun updateAnimation(@PathVariable("id") animationId: Int, @RequestBody animation: Animation): Int {
+        try {
+            return animationService.updateAnimation(animationId, animation)
+        } catch (exception: NoRecordToUpdateException) {
             throw ResponseStatusException(UNPROCESSABLE_ENTITY, "We can't update an animation without it's ID.")
+        }
 
     }
 

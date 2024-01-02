@@ -47,8 +47,9 @@ class AnimationRepository(
         return keyholder.keys?.get("id") as Int
     }
 
-    fun updateAnimation(id: Int, animation: Animation) {
-        template.update(
+    fun updateAnimation(id: Int, animation: Animation): Int {
+        val keyHolder = GeneratedKeyHolder()
+        val affected = template.update(
             """
             UPDATE matrix_animator.animations 
             SET 
@@ -57,8 +58,13 @@ class AnimationRepository(
             (:title, :userId, :height, :width, :speed, :frames::jsonb)
             WHERE id = :id
             """,
-            mapAnimationToParameters(animation).apply { addValue("id", id) }
+            mapAnimationToParameters(animation).apply { addValue("id", id) },
+            keyHolder
         )
+        if (affected == 0) {
+            throw NoRecordToUpdateException("No records were affected by the update.")
+        }
+        return keyHolder.keys?.get("id") as Int
     }
 
     fun deleteAnimation(id: Int): Int {
@@ -102,3 +108,6 @@ class AnimationRepository(
         """
     }
 }
+
+class NoRecordToUpdateException(message: String?) : Exception(message)
+

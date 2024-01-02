@@ -7,15 +7,18 @@ import com.lightinspiration.matrixanimatorapi.domain.AnimationMeta
 import com.lightinspiration.matrixanimatorapi.domain.Frame
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.fail
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.server.ResponseStatusException
 
 @SpringBootTest
 @ActiveProfiles("integration-test")
@@ -96,9 +99,30 @@ class AnimationsControllerIntegrationTest {
             id
         )
 
-        animationController.updateAnimation(updatedAnimation)
+        val actual = animationController.updateAnimation(id, updatedAnimation)
 
         assertEquals(updatedAnimation, getAnimationsFromDatabase().first())
+        assertEquals(id, actual)
+    }
+
+    @Test
+    @Transactional
+    fun `updateAnimation - if the animation record doesn't exist, expect a 422 http exception`() {
+        val updatedAnimation = Animation(
+            "New title",
+            2,
+            3,
+            4,
+            5,
+            listOf(Frame(0, listOf(0xFFFFFF))),
+            999
+        )
+
+        val exception = assertThrows<ResponseStatusException> {
+            animationController.updateAnimation(999, updatedAnimation)
+        }
+
+        assertEquals(exception.statusCode, UNPROCESSABLE_ENTITY)
     }
 
     @Test

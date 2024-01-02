@@ -81,10 +81,11 @@ class AnimationServiceTest {
     fun `updateAnimation - can update an animation`() {
         val id = 10
         val animation = buildAnimation(id)
+        whenever(animationRepository.updateAnimation(id, animation)).thenReturn(id)
 
-        animationService.updateAnimation(id, animation)
+        val actual = animationService.updateAnimation(id, animation)
 
-        verify(animationRepository).updateAnimation(id, animation)
+        assertEquals(id, actual)
     }
 
     @Test

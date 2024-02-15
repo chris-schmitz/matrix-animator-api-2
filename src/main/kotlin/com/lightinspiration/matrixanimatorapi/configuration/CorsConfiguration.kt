@@ -15,7 +15,7 @@ class CorsConfiguration {
             override fun addCorsMappings(registry: CorsRegistry) {
                 registry
                     .addMapping("/rest/animations/**")
-                    .allowedOrigins(allowedOrigins)
+                    .allowedOrigins("http://localhost:3000")
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                     .allowedHeaders("*")
                     .allowCredentials(true)
